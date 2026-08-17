@@ -1,0 +1,49 @@
+load_from: microsoft/trocr-base-handwritten
+output_dir: outputs
+
+data:
+  datasets:
+    iam:
+      name: IAM
+      path: null
+      validation_set: [1, 2]
+      loader_class: IAMDatasetLoader
+    rimes:
+      name: RIMES
+      path: null
+      loader_class: RimesDatasetLoader
+    bentham:
+      name: Bentham
+      path: null
+      loader_class: BenthamDatasetLoader
+    saint_gall:
+      name: Saint Gall
+      path: null
+      loader_class: SaintGallDatasetLoader
+    barbados:
+      name: Barbados
+      path: null
+      loader_class: BarbadosDatasetLoader
+
+model:
+  generation_config:
+    max_length: 128
+    early_stopping: true
+    no_repeat_ngram_size: 3
+    length_penalty: 2.0
+    num_beams: 4
+    max_target_length: 128
+
+train:
+  save_strategy: steps
+  save_steps: 500
+  train_batch_size: 8
+  eval_batch_size: 8
+  fp16: true
+  num_train_epochs: 3
+  learning_rate: 5e-5
+  save_total_limit: 2
+  load_best_model_at_end: true
+
+reporting:
+  report_to: none
