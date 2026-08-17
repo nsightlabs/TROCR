@@ -14,7 +14,12 @@ from transformers import (
 )
 from dataset import (
     DatasetLoader,
-    HTRDataset
+    HTRDataset,
+    IAMDatasetLoader,
+    RimesDatasetLoader,
+    BarbadosDatasetLoader,
+    BenthamDatasetLoader,
+    SaintGallDatasetLoader
 )
 
 
