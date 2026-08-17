@@ -7,6 +7,7 @@ from abc import ABC, abstractmethod
 from tqdm import tqdm
 from PIL import Image
 from pathlib import Path
+from torch.utils.data import Dataset
 from sklearn.model_selection import train_test_split
 from transformers import TrOCRProcessor
 
