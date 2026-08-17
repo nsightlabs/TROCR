@@ -20,6 +20,10 @@ data:
       name: Saint Gall
       path: null
       loader_class: SaintGallDatasetLoader
+    washington:
+      name: Washington
+      path: null
+      loader_class: WashingtonDatasetLoader
     barbados:
       name: Barbados
       path: null

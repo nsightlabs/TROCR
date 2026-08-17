@@ -100,6 +100,41 @@ class BenthamDatasetLoader(DatasetLoader):
         self.test_data = [(str(self.path / "Images/Lines" / f"{filename}.png"), transcriptions.get(filename)) for filename in test_filenames]
         self.transcriptions = transcriptions
         
+# class WashingtonDatasetLoader(DatasetLoader): 
+#     def __init__(self, path: str, cv_fold: str = "cv1"):
+#         self.path = Path(path)
+#         self.cv_fold = cv_fold
+#         self._prepare()
+ 
+#     def _prepare(self):
+#         sets_dir = self.path / "sets" / self.cv_fold
+#         train_file = sets_dir / "train.txt"
+#         val_file = sets_dir / "valid.txt"
+#         test_file = sets_dir / "test.txt"
+ 
+#         train_ids = train_file.read_text().strip().split("\n")
+#         val_ids = val_file.read_text().strip().split("\n")
+#         test_ids = test_file.read_text().strip().split("\n")
+ 
+#         transcriptions = self._load_transcriptions()
+ 
+#         images_dir = self.path / "data" / "line_images_normalized"
+#         self.train_data = [(str(images_dir / f"{line_id}.png"), transcriptions.get(line_id)) for line_id in train_ids]
+#         self.val_data = [(str(images_dir / f"{line_id}.png"), transcriptions.get(line_id)) for line_id in val_ids]
+#         self.test_data = [(str(images_dir / f"{line_id}.png"), transcriptions.get(line_id)) for line_id in test_ids]
+#         self.transcriptions = transcriptions
+ 
+#     def _load_transcriptions(self):
+#         transcription_file = self.path / "ground_truth" / "transcription.txt"
+#         transcriptions = {}
+#         lines = transcription_file.read_text().strip().split("\n")
+#         for line in tqdm(lines, desc="loading transcriptions"):
+#             line_id, spelling_field = line.strip().split(" ")
+#             if not encoded:
+#                 continue
+#             transcriptions[line_id] = decode_line(encoded)
+#         return transcriptions
+        
 class RimesDatasetLoader(DatasetLoader):
     def __init__(self, path: str):
         self.path = Path(path)

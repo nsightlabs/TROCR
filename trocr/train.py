@@ -112,8 +112,8 @@ def main():
     )
     
     trainer.train()
-    model.save_pretrained(os.path.join(cfg.train.output_dir, "checkpoint-final"))
-    processor.save_pretrained(os.path.join(cfg.train.output_dir, "checkpoint-final"))
+    model.save_pretrained(os.path.join(cfg.output_dir, "checkpoint-final"))
+    processor.save_pretrained(os.path.join(cfg.output_dir, "checkpoint-final"))
 
 
 if __name__ == "__main__":
