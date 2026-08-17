@@ -92,7 +92,7 @@ def main():
         fp16=cfg.train.fp16,
         output_dir=cfg.output_dir,
         num_train_epochs=cfg.train.num_train_epochs,
-        max_epochs=cfg.train.max_epochs,
+        max_steps=cfg.train.max_steps,
         learning_rate=cfg.train.learning_rate,
         save_total_limit=cfg.train.save_total_limit,
         load_best_model_at_end=cfg.train.load_best_model_at_end,
