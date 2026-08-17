@@ -12,7 +12,7 @@ from transformers import (
     Seq2SeqTrainingArguments,
     default_data_collator,
 )
-from trocr.dataset import (
+from dataset import (
     DatasetLoader,
     HTRDataset
 )
