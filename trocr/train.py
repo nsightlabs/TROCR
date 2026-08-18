@@ -12,6 +12,7 @@ from transformers import (
     Seq2SeqTrainer,
     Seq2SeqTrainingArguments,
     default_data_collator,
+    EarlyStoppingCallback
 )
 from dataset import (
     DatasetLoader,
@@ -100,13 +101,18 @@ def main():
     
     train_dataset = HTRDataset(train_data, processor, max_target_length=cfg.model.generation_config.max_target_length)
     eval_dataset = HTRDataset(val_data, processor, max_target_length=cfg.model.generation_config.max_target_length)
+    callbacks = [
+        EarlyStoppingCallback(early_stopping_patience=cfg.train.early_stopping_patience),
+    ]
     
     training_args = Seq2SeqTrainingArguments(
         predict_with_generate=True,
         eval_strategy=cfg.train.save_strategy,
         save_strategy=cfg.train.save_strategy,
+        logging_strategy=cfg.train.save_strategy,
         eval_steps=cfg.train.save_steps,
         save_steps=cfg.train.save_steps,
+        logging_steps=cfg.train.save_steps,
         per_device_train_batch_size=cfg.train.train_batch_size,
         per_device_eval_batch_size=cfg.train.eval_batch_size,
         fp16=cfg.train.fp16,
@@ -121,7 +127,8 @@ def main():
         load_best_model_at_end=cfg.train.load_best_model_at_end,
         metric_for_best_model="cer",
         greater_is_better=False,
-        report_to=cfg.reporting.report_to,  # change to "wandb" or "tensorboard" if you want logging
+        report_to=cfg.reporting.report_to,
+        callbacks=callbacks
     )
     
     trainer = Seq2SeqTrainer(
