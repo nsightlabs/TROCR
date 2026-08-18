@@ -3,4 +3,4 @@ jiwer
 transformers
 omegaconf
 peft
-torchao
+torchao>=0.16.0
