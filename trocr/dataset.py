@@ -42,6 +42,7 @@ class DatasetLoader(ABC):
         self.train_data = None
         self.val_data = None
         self.test_data = None
+        self.predict_data = None
 
     @abstractmethod
     def _prepare(self):
@@ -55,6 +56,8 @@ class DatasetLoader(ABC):
             return self.val_data
         elif split == "test":
             return self.test_data
+        elif split == "predict":
+            return self.predict_data
         else:
             raise ValueError(f"Unknown split: {split}. Expected: train, val, test.")
         
@@ -65,6 +68,7 @@ class BarbadosDatasetLoader(DatasetLoader):
 
     def _prepare(self):
         df = pd.read_csv(self.path /  "Train.csv")
+        predict_df = pd.read_csv(self.path /  "Test.csv")
         tmp_df, test_df = train_test_split(df, test_size=0.1, random_state=0)
         train_df, val_df = train_test_split(tmp_df, test_size=0.1, random_state=0)
 
@@ -73,6 +77,7 @@ class BarbadosDatasetLoader(DatasetLoader):
         self.train_data = [(str(self.path / "images/images" / f"{row.ID}.jpg"), transcriptions.get(row.ID)) for row in train_df.itertuples()]
         self.val_data = [(str(self.path / "images/images" / f"{row.ID}.jpg"), transcriptions.get(row.ID)) for row in val_df.itertuples()]
         self.test_data = [(str(self.path / "images/images" / f"{row.ID}.jpg"), transcriptions.get(row.ID)) for row in test_df.itertuples()]
+        self.predict_data = [(str(self.path / "images/images" / f"{row.ID}.jpg"), row.ID) for row in predict_df.itertuples()]
         self.transcriptions = transcriptions
 
 class BenthamDatasetLoader(DatasetLoader):
