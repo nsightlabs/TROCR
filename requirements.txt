@@ -3,3 +3,4 @@ jiwer
 transformers
 omegaconf
 peft
+torchao
