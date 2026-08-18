@@ -62,7 +62,7 @@ def main():
     rows.append(["Combined", len(train_data), len(val_data)])
     print(tabulate(rows, headers=["Dataset", "Train", "Val"], tablefmt="grid"))
 
-    processor = TrOCRProcessor.from_pretrained(cfg.load_from)
+    processor = TrOCRProcessor.from_pretrained("microsoft/trocr-base-handwritten")
     model = VisionEncoderDecoderModel.from_pretrained(cfg.load_from)
     
     # Required config for generation
