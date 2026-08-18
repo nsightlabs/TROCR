@@ -91,6 +91,12 @@ def main():
         )
         model = get_peft_model(model, lora_config)
         model.print_trainable_parameters()
+        
+        _original_save_pretrained = model.save_pretrained
+        def _patched_save_pretrained(*args, **kwargs):
+            kwargs.setdefault("save_embedding_layers", False)
+            return _original_save_pretrained(*args, **kwargs)
+        model.save_pretrained = _patched_save_pretrained
     
     train_dataset = HTRDataset(train_data, processor, max_target_length=cfg.model.generation_config.max_target_length)
     eval_dataset = HTRDataset(val_data, processor, max_target_length=cfg.model.generation_config.max_target_length)
