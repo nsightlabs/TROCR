@@ -40,7 +40,7 @@ def main(rank: int, world_size: int, cfg: OmegaConf.load, submission_list: list)
     for item in tqdm(sample_data, desc=f'Inference: [{rank}]'):
         image_path, ID = item
         images = [Image.open(image_path).convert("RGB")]       
-        pixel_values = processor(images, return_tensors="pt").to(device)
+        pixel_values = processor(images, return_tensors="pt").pixel_values.to(device)
         generated_ids = model.generate(pixel_values)
         generated_text = processor.batch_decode(generated_ids, skip_special_tokens=True)
         submission_list.append({'ID': ID, 'Target': generated_text})    
