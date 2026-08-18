@@ -5,6 +5,7 @@ import argparse
 from tabulate import tabulate
 from omegaconf import OmegaConf
 from metrics import make_compute
+from peft import LoraConfig, get_peft_model, TaskType
 from transformers import (
     TrOCRProcessor,
     VisionEncoderDecoderModel,
@@ -77,6 +78,19 @@ def main():
     model.generation_config.no_repeat_ngram_size = cfg.model.generation_config.no_repeat_ngram_size
     model.generation_config.length_penalty = cfg.model.generation_config.length_penalty
     model.generation_config.num_beams = cfg.model.generation_config.num_beams
+    
+    use_lora = OmegaConf.select(cfg, "train.lora.enabled", default=False)
+    if use_lora:
+        lora_config = LoraConfig(
+            r=cfg.train.lora.r,                         
+            lora_alpha=cfg.train.lora.alpha,               
+            lora_dropout=cfg.train.lora.dropout,
+            bias=cfg.train.lora.bias,
+            target_modules=cfg.train.lora.target_modules,  
+            task_type=TaskType.SEQ_2_SEQ_LM,
+        )
+        model = get_peft_model(model, lora_config)
+        model.print_trainable_parameters()
     
     train_dataset = HTRDataset(train_data, processor, max_target_length=cfg.model.generation_config.max_target_length)
     eval_dataset = HTRDataset(val_data, processor, max_target_length=cfg.model.generation_config.max_target_length)

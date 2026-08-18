@@ -2,3 +2,4 @@ evaluate
 jiwer
 transformers
 omegaconf
+peft
