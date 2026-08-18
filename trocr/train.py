@@ -80,7 +80,7 @@ def main():
     model.generation_config.length_penalty = cfg.model.generation_config.length_penalty
     model.generation_config.num_beams = cfg.model.generation_config.num_beams
     
-    use_lora = OmegaConf.select(cfg, "train.lora.enabled", default=False)
+    use_lora = "lora" in cfg.train
     if use_lora:
         lora_config = LoraConfig(
             r=cfg.train.lora.r,                         
