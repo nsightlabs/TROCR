@@ -127,8 +127,7 @@ def main():
         load_best_model_at_end=cfg.train.load_best_model_at_end,
         metric_for_best_model="cer",
         greater_is_better=False,
-        report_to=cfg.reporting.report_to,
-        callbacks=callbacks
+        report_to=cfg.reporting.report_to        
     )
     
     trainer = Seq2SeqTrainer(
@@ -139,6 +138,7 @@ def main():
         train_dataset=train_dataset,
         eval_dataset=eval_dataset,
         data_collator=default_data_collator,
+        callbacks=callbacks
     )
     
     trainer.train()
