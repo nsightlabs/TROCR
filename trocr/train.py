@@ -127,7 +127,10 @@ def main():
         load_best_model_at_end=cfg.train.load_best_model_at_end,
         metric_for_best_model="cer",
         greater_is_better=False,
-        report_to=cfg.reporting.report_to        
+        report_to=cfg.reporting.report_to,
+        seed=cfg.train.seed,   
+        optim=cfg.train.optimizer,  
+        dataloader_num_workers=cfg.train.dataloader_num_workers  
     )
     
     trainer = Seq2SeqTrainer(
