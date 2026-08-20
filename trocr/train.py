@@ -80,7 +80,7 @@ def main():
     print(tabulate(rows, headers=["Dataset", "Train", "Val"], tablefmt="grid"))
 
     processor = TrOCRProcessor.from_pretrained(cfg.load_from)
-    model = VisionEncoderDecoderModel.from_pretrained(cfg.load_from)
+    model = VisionEncoderDecoderModel.from_pretrained(cfg.load_from, low_cpu_mem_usage=False)
     
     # Required config for generation
     model.config.decoder_start_token_id = processor.tokenizer.cls_token_id
