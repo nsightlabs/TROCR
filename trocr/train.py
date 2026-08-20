@@ -53,6 +53,13 @@ def main():
     cfg = OmegaConf.load(args.config_file)
     print(OmegaConf.to_yaml(cfg))
     
+    if cfg.reporting.report_to == "wandb":
+        import wandb
+        wandb.init(
+            project=os.environ.get("WANDB_PROJECT", "TROCR"),
+            config=OmegaConf.to_container(cfg, resolve=True),
+        )
+    
     train_data = []
     val_data = []
     rows = []
