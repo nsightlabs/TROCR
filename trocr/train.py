@@ -97,13 +97,6 @@ def main():
     model.generation_config.length_penalty = cfg.model.generation_config.length_penalty
     model.generation_config.num_beams = cfg.model.generation_config.num_beams
     
-    if "stage1" in cfg.load_from:
-        pe = model.decoder.model.decoder.embed_positions
-        if  pe.weights.device.type == "meta":
-            pe.weights = pe.get_embedding(
-                pe.weights.shape[0], pe.weights.shape[1], pe.padding_idx
-            )
-    
     if cfg.train.freeze_encoder:
         for p in model.encoder.parameters():
             p.requires_grad = False
