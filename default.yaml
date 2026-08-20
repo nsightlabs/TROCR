@@ -39,6 +39,7 @@ model:
     max_target_length: 128
 
 train:
+  freeze_encoder: false
   save_strategy: steps
   save_steps: 500
   train_batch_size: 8

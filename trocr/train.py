@@ -24,6 +24,23 @@ from dataset import (
     SaintGallDatasetLoader
 )
 
+def print_trainable_parameters(model):
+    trainable_params = 0
+    all_params = 0
+    for _, param in model.named_parameters():
+        num_params = param.numel()
+        all_params += num_params
+        if param.requires_grad:
+            trainable_params += num_params
+
+    frozen_params = all_params - trainable_params
+    print(
+        f"trainable params: {trainable_params:,} || "
+        f"frozen params: {frozen_params:,} || "
+        f"total params: {all_params:,} || "
+        f"trainable%: {100 * trainable_params / all_params:.4f}%"
+    )
+
 
 def parse_args():
     p = argparse.ArgumentParser()
@@ -80,6 +97,10 @@ def main():
     model.generation_config.length_penalty = cfg.model.generation_config.length_penalty
     model.generation_config.num_beams = cfg.model.generation_config.num_beams
     
+    if cfg.train.freeze_encoder:
+        for p in model.encoder.parameters():
+            p.requires_grad = False
+    
     use_lora = "lora" in cfg.train
     if use_lora:
         lora_config = LoraConfig(
@@ -98,6 +119,8 @@ def main():
             kwargs.setdefault("save_embedding_layers", False)
             return _original_save_pretrained(*args, **kwargs)
         model.save_pretrained = _patched_save_pretrained
+        
+    print_trainable_parameters(model)
     
     train_dataset = HTRDataset(train_data, processor, max_target_length=cfg.model.generation_config.max_target_length)
     eval_dataset = HTRDataset(val_data, processor, max_target_length=cfg.model.generation_config.max_target_length)
