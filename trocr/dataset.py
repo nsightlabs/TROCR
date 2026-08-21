@@ -43,33 +43,52 @@ from transformers import TrOCRProcessor
     
     
 class HTRDataset(Dataset):
-    def __init__(self, data: List, processor: TrOCRProcessor, transform=None, max_target_length: int = 128):
+    def __init__(
+        self,
+        data: List,
+        processor: TrOCRProcessor,
+        transform=None,
+        max_target_length: int = 128,
+        is_train: bool = False,
+    ):
+        """
+        Args:
+            data: list of (image_path, text) tuples
+            processor: TrOCRProcessor for image + text preprocessing
+            transform: augmentation callable for this split (different
+                       instance/pipeline expected for train vs val)
+            max_target_length: max token length for labels
+            is_train: if True, dataset is doubled (clean + augmented copy
+                      per sample). If False, transform (if given) is applied
+                      to every sample once, no doubling.
+        """
         self.data = data
         self.processor = processor
         self.max_target_length = max_target_length
         self.transform = transform
+        self.is_train = is_train
 
     def __len__(self):
-        if self.transform is not None:
-            return len(self.data) * 2
-        else:
-            return len(self.data)
+        return len(self.data) * 2 if self.is_train else len(self.data)
 
     def __getitem__(self, idx):
-        actual_idx = idx
-        apply_transfrom = False 
-        if self.transform is not None:
+        if self.is_train:
             actual_idx = idx // 2
-            if idx % 2 == 0:
-                apply_transfrom = True         
-            
+            apply_transform = (idx % 2 == 0)
+        else:
+            actual_idx = idx
+            # val/test: apply transform (if provided) to every sample,
+            # no doubling — typically deterministic preprocessing rather
+            # than random augmentation.
+            apply_transform = self.transform is not None
+
         image_path, text = self.data[actual_idx]
         image = Image.open(image_path).convert("RGB")
-        
-        if apply_transfrom:
+
+        if apply_transform and self.transform is not None:
             image = self.transform(image)
 
-        pixel_values = self.processor(image, return_tensors="pt").pixel_values.squeeze()
+        pixel_values = self.processor(image, return_tensors="pt").pixel_values.squeeze(0)
 
         labels = self.processor.tokenizer(
             text,
@@ -79,9 +98,13 @@ class HTRDataset(Dataset):
         ).input_ids
 
         # Replace padding token id with -100 so it's ignored in loss computation
-        labels = [label if label != self.processor.tokenizer.pad_token_id else -100 for label in labels]
-        return {"pixel_values": pixel_values, "labels": torch.tensor(labels)}  
-
+        labels = [
+            label if label != self.processor.tokenizer.pad_token_id else -100
+            for label in labels
+        ]
+        return {"pixel_values": pixel_values, "labels": torch.tensor(labels)}
+    
+    
 class DatasetLoader(ABC):
     def __init__(self):
         self.train_data = None
