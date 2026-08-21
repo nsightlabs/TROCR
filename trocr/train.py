@@ -146,7 +146,8 @@ def main():
             tfm = None
         else:
             raise Exception('Undeined image preprocess method.')      
-        dataset[split] = HTRDataset(split_data, processor, transform=tfm, max_target_length=cfg.model.generation_config.max_target_length, is_train=(split == "train"))
+        # dataset[split] = HTRDataset(split_data, processor, transform=tfm, max_target_length=cfg.model.generation_config.max_target_length, is_train=(split == "train"))
+        dataset[split] = HTRDataset(split_data, processor, transform=tfm, max_target_length=cfg.model.generation_config.max_target_length)
     
     training_args = Seq2SeqTrainingArguments(
         predict_with_generate=True,
