@@ -12,10 +12,11 @@ from sklearn.model_selection import train_test_split
 from transformers import TrOCRProcessor
 
 class HTRDataset(Dataset):
-    def __init__(self, data: List, processor: TrOCRProcessor, max_target_length: int = 128):
+    def __init__(self, data: List, processor: TrOCRProcessor, transform=None, max_target_length: int = 128):
         self.data = data
         self.processor = processor
         self.max_target_length = max_target_length
+        self.transform = transform
 
     def __len__(self):
         return len(self.data)
@@ -23,6 +24,9 @@ class HTRDataset(Dataset):
     def __getitem__(self, idx):
         image_path, text = self.data[idx]
         image = Image.open(image_path).convert("RGB")
+        
+        if self.transform is not None:
+            image = self.transform(image)
 
         pixel_values = self.processor(image, return_tensors="pt").pixel_values.squeeze()
 

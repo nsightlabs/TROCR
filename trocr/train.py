@@ -5,6 +5,7 @@ import argparse
 from tabulate import tabulate
 from omegaconf import OmegaConf
 from metrics import make_compute
+from data_aug import build_data_aug, OptForDataAugment, DataAugment
 from peft import LoraConfig, get_peft_model, TaskType
 from transformers import (
     TrOCRProcessor,
@@ -53,8 +54,7 @@ def main():
     cfg = OmegaConf.load(args.config_file)
     print(OmegaConf.to_yaml(cfg))
     
-    train_data = []
-    val_data = []
+    data = {'train':[], 'val':[]}
     rows = []
     
     for dataset in cfg.data.datasets:
@@ -69,14 +69,14 @@ def main():
         test = loader.get('test')
                 
         if dataset == "barbados":
-            train_data.extend(train + val)
-            val_data.extend(test)
+            data['train'].extend(train + val)
+            data['val'].extend(test)
             rows.append([OmegaConf.select(cfg, f"data.datasets.{dataset}.name"), len(train + val), len(test)])
         else:     
-            train_data.extend(train + val + test)            
+            data['train'].extend(train + val + test)            
             rows.append([OmegaConf.select(cfg, f"data.datasets.{dataset}.name"), len(train + val + test), 0])
             
-    rows.append(["Combined", len(train_data), len(val_data)])
+    rows.append(["Combined", len(data['train']), len(data['val'])])
     print(tabulate(rows, headers=["Dataset", "Train", "Val"], tablefmt="grid"))
 
     processor = TrOCRProcessor.from_pretrained(cfg.load_from)
@@ -122,11 +122,31 @@ def main():
         
     print_trainable_parameters(model)
     
-    train_dataset = HTRDataset(train_data, processor, max_target_length=cfg.model.generation_config.max_target_length)
-    eval_dataset = HTRDataset(val_data, processor, max_target_length=cfg.model.generation_config.max_target_length)
+    dataset = {}
     callbacks = [
         EarlyStoppingCallback(early_stopping_patience=cfg.train.early_stopping_patience),
     ]
+    
+    input_size = cfg.train.preprocess.input_size        
+    if isinstance(input_size, list):
+        if len(input_size) == 1:
+            input_size = (input_size[0], input_size[0])
+        else:
+            input_size = tuple(input_size)
+    elif isinstance(input_size, int):
+        input_size = (input_size, input_size)
+    
+    for split, split_data in data.items():        
+        if cfg.train.preprocess.type == 'DA2':            
+            tfm = build_data_aug(input_size, mode=split)     
+        elif cfg.train.preprocess.type == 'RandAugment':
+            opt = OptForDataAugment(eval= (split != 'train'), isrand_aug=True, imgW=input_size[1], imgH=input_size[0], intact_prob=0.5, augs_num=3, augs_mag=None)
+            tfm = DataAugment(opt)  
+        elif cfg.train.preprocess.type is None: 
+            tfm = None
+        else:
+            raise Exception('Undeined image preprocess method.')          
+        dataset[split] = HTRDataset(split_data, processor, transform=tfm, max_target_length=cfg.model.generation_config.max_target_length)
     
     training_args = Seq2SeqTrainingArguments(
         predict_with_generate=True,
@@ -161,8 +181,8 @@ def main():
         processing_class=processor.image_processor,
         args=training_args,
         compute_metrics=make_compute(processor),
-        train_dataset=train_dataset,
-        eval_dataset=eval_dataset,
+        train_dataset=dataset['train'],
+        eval_dataset=dataset['val'],
         data_collator=default_data_collator,
         callbacks=callbacks
     )
