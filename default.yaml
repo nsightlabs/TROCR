@@ -59,7 +59,7 @@ train:
   dataloader_num_workers: 0
   preprocess:
     input_size: 384
-    type: None
+    type: null
 
 reporting:
   report_to: none
