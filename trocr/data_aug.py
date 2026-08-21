@@ -6,14 +6,14 @@ import torch
 import numpy as np
 import logging
 from enum import Enum
-from .augmentation.warp import Curve, Distort, Stretch
-from .augmentation.geometry import Rotate, Perspective, Shrink, TranslateX, TranslateY
-from .augmentation.pattern import VGrid, HGrid, Grid, RectGrid, EllipseGrid
-from .augmentation.noise import GaussianNoise, ShotNoise, ImpulseNoise, SpeckleNoise
-from .augmentation.blur import GaussianBlur, DefocusBlur, MotionBlur, GlassBlur, ZoomBlur
-from .augmentation.camera import Contrast, Brightness, JpegCompression, Pixelate
-from .augmentation.weather import Fog, Snow, Frost, Rain, Shadow
-from .augmentation.process import Posterize, Solarize, Invert, Equalize, AutoContrast, Sharpness, Color
+from trocr.augmentation.warp import Curve, Distort, Stretch
+from trocr.augmentation.geometry import Rotate, Perspective, Shrink, TranslateX, TranslateY
+from trocr.augmentation.pattern import VGrid, HGrid, Grid, RectGrid, EllipseGrid
+from trocr.augmentation.noise import GaussianNoise, ShotNoise, ImpulseNoise, SpeckleNoise
+from trocr.augmentation.blur import GaussianBlur, DefocusBlur, MotionBlur, GlassBlur, ZoomBlur
+from trocr.augmentation.camera import Contrast, Brightness, JpegCompression, Pixelate
+from trocr.augmentation.weather import Fog, Snow, Frost, Rain, Shadow
+from trocr.augmentation.process import Posterize, Solarize, Invert, Equalize, AutoContrast, Sharpness, Color
 
 # 0: InterpolationMode.NEAREST,
 # 2: InterpolationMode.BILINEAR,
