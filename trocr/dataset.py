@@ -11,6 +11,37 @@ from torch.utils.data import Dataset
 from sklearn.model_selection import train_test_split
 from transformers import TrOCRProcessor
 
+# class HTRDataset(Dataset):
+#     def __init__(self, data: List, processor: TrOCRProcessor, transform=None, max_target_length: int = 128):
+#         self.data = data
+#         self.processor = processor
+#         self.max_target_length = max_target_length
+#         self.transform = transform
+
+#     def __len__(self):
+#         return len(self.data)
+
+#     def __getitem__(self, idx):
+#         image_path, text = self.data[idx]
+#         image = Image.open(image_path).convert("RGB")
+        
+#         if self.transform is not None:
+#             image = self.transform(image)
+
+#         pixel_values = self.processor(image, return_tensors="pt").pixel_values.squeeze()
+
+#         labels = self.processor.tokenizer(
+#             text,
+#             padding="max_length",
+#             max_length=self.max_target_length,
+#             truncation=True,
+#         ).input_ids
+
+#         # Replace padding token id with -100 so it's ignored in loss computation
+#         labels = [label if label != self.processor.tokenizer.pad_token_id else -100 for label in labels]
+#         return {"pixel_values": pixel_values, "labels": torch.tensor(labels)}
+    
+    
 class HTRDataset(Dataset):
     def __init__(self, data: List, processor: TrOCRProcessor, transform=None, max_target_length: int = 128):
         self.data = data
@@ -19,13 +50,23 @@ class HTRDataset(Dataset):
         self.transform = transform
 
     def __len__(self):
-        return len(self.data)
+        if self.transform is not None:
+            return len(self.data) * 2
+        else:
+            return len(self.data)
 
     def __getitem__(self, idx):
-        image_path, text = self.data[idx]
+        actual_idx = idx
+        apply_transfrom = False 
+        if self.transform is not None:
+            actual_idx = idx // 2
+            if idx % 2 == 0:
+                apply_transfrom = True         
+            
+        image_path, text = self.data[actual_idx]
         image = Image.open(image_path).convert("RGB")
         
-        if self.transform is not None:
+        if apply_transfrom:
             image = self.transform(image)
 
         pixel_values = self.processor(image, return_tensors="pt").pixel_values.squeeze()
@@ -39,7 +80,7 @@ class HTRDataset(Dataset):
 
         # Replace padding token id with -100 so it's ignored in loss computation
         labels = [label if label != self.processor.tokenizer.pad_token_id else -100 for label in labels]
-        return {"pixel_values": pixel_values, "labels": torch.tensor(labels)}    
+        return {"pixel_values": pixel_values, "labels": torch.tensor(labels)}  
 
 class DatasetLoader(ABC):
     def __init__(self):
