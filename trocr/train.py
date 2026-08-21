@@ -145,8 +145,7 @@ def main():
         elif cfg.train.preprocess.type is None: 
             tfm = None
         else:
-            raise Exception('Undeined image preprocess method.')      
-        # dataset[split] = HTRDataset(split_data, processor, transform=tfm, max_target_length=cfg.model.generation_config.max_target_length, is_train=(split == "train"))
+            raise Exception('Undeined image preprocess method.')   
         dataset[split] = HTRDataset(split_data, processor, transform=tfm, max_target_length=cfg.model.generation_config.max_target_length)
     
     training_args = Seq2SeqTrainingArguments(
