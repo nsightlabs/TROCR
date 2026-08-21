@@ -155,13 +155,13 @@ def build_data_aug(size, mode, resnet=False, resizepad=False):
                 Underline(),
                 KeepOriginal(),
             ]),
-            resize_tfm,
+            # resize_tfm,
             transforms.ToTensor(),
             norm_tfm
         ])
     else:
         return transforms.Compose([
-            resize_tfm,
+            # resize_tfm,
             transforms.ToTensor(),
             norm_tfm
         ])
