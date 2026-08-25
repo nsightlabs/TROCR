@@ -44,7 +44,7 @@ class Fog:
         # print('fog', fog.shape)
         # print(H, W)
         # exit(0)
-        fog = cv2.resize(fog, dsize=(H, W), interpolation=cv2.INTER_CUBIC)
+        fog = cv2.resize(fog, dsize=(W, H), interpolation=cv2.INTER_CUBIC)
         img += fog
         img = np.clip(img * max_val / (max_val + c[0]), 0, 1) * 255
         return Image.fromarray(img.astype(np.uint8))
@@ -76,7 +76,7 @@ class Frost:
         index = np.random.randint(0, len(filename))
         filename = filename[index]
         frost = cv2.imread(filename)
-        frost = cv2.resize(frost, dsize=(H, W), interpolation=cv2.INTER_CUBIC)
+        frost = cv2.resize(frost, dsize=(W, H), interpolation=cv2.INTER_CUBIC)
         #randomly crop and convert to rgb
         # x_start, y_start = np.random.randint(0, frost.shape[0] - H), np.random.randint(0, frost.shape[1] - W)
         x_start = 0
