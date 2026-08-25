@@ -178,7 +178,7 @@ def main():
     
     trainer = Seq2SeqTrainer(
         model=model,
-        processing_class=processor.image_processor,
+        processing_class=processor,
         args=training_args,
         compute_metrics=make_compute(processor),
         train_dataset=dataset['train'],
