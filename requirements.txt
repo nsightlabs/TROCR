@@ -4,4 +4,4 @@ transformers
 omegaconf
 peft
 torchao>=0.16.0
-opencv-contrib-python
+opencv-contrib-python==4.10.0.84
