@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import torch
 import argparse
 from tabulate import tabulate
 from omegaconf import OmegaConf
@@ -41,6 +42,22 @@ def print_trainable_parameters(model):
         f"total params: {all_params:,} || "
         f"trainable%: {100 * trainable_params / all_params:.4f}%"
     )
+    
+
+def make_collator(model):
+    def collate_fn(features):
+        pixel_values = torch.stack([f["pixel_values"] for f in features])
+        labels = torch.stack([f["labels"] for f in features])
+
+        # Precompute decoder_input_ids so it survives label_smoothing's popping of `labels`
+        decoder_input_ids = model.prepare_decoder_input_ids_from_labels(labels=labels)
+
+        return {
+            "pixel_values": pixel_values,
+            "labels": labels,
+            "decoder_input_ids": decoder_input_ids,
+        }
+    return collate_fn
 
 
 def parse_args():
@@ -184,7 +201,7 @@ def main():
         compute_metrics=make_compute(processor),
         train_dataset=dataset['train'],
         eval_dataset=dataset['val'],
-        data_collator=default_data_collator,
+        data_collator=make_collator(model),
         callbacks=callbacks
     )
     
