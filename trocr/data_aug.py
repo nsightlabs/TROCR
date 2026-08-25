@@ -151,21 +151,13 @@ def build_data_aug(size, mode, resnet=False, resizepad=False):
                 transforms.GaussianBlur(3),
                 Dilation(3),
                 Erosion(3),
-                transforms.Resize((size[0] // 3, size[1] // 3), interpolation=InterpolationMode.NEAREST),
+                # transforms.Resize((size[0] // 3, size[1] // 3), interpolation=InterpolationMode.NEAREST),
                 Underline(),
                 KeepOriginal(),
             ]),
-            resize_tfm,
-            transforms.ToTensor(),
-            norm_tfm
         ])
     else:
         return None
-        # return transforms.Compose([
-        #     resize_tfm,
-        #     transforms.ToTensor(),
-        #     norm_tfm
-        # ])
 
 
 class OptForDataAugment:
@@ -233,8 +225,6 @@ class DataAugment(object):
         '''
             Must call img.copy() if pattern, Rain or Shadow is used
         '''
-        img = img.resize((self.opt.imgW, self.opt.imgH), Image.BICUBIC)
-
         if self.opt.eval or isless(self.opt.intact_prob):
             pass
         elif self.opt.isrand_aug or self.isbaseline_aug:
@@ -242,9 +232,7 @@ class DataAugment(object):
         # individual augment can also be selected
         elif self.opt.issel_aug:
             img = self.sel_aug(img)
-
-        img = transforms.ToTensor()(img)
-        img = transforms.Normalize(0.5, 0.5)(img)
+            
         return img
 
 

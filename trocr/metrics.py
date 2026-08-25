@@ -4,7 +4,10 @@ from typing import List
 from enum import Enum
 from jiwer import process_words, process_characters
 from transformers import TrOCRProcessor
+from evaluate import load
 
+cer_metric = load('cer')
+wer_metric = load("wer")
 class Metric(Enum):
     WER = "wer"
     CER = "cer"
@@ -19,10 +22,12 @@ def make_compute(processor: TrOCRProcessor):
         labels_ids[labels_ids == -100] = processor.tokenizer.pad_token_id
         label_str = processor.batch_decode(labels_ids, skip_special_tokens=True)
 
-        cer = weighted_score(Metric.CER, label_str, pred_str, weight_factor=0.5)
-        wer = weighted_score(Metric.WER, label_str, pred_str, weight_factor=0.5)
+        wgt_cer = weighted_score(Metric.CER, label_str, pred_str, weight_factor=0.5)
+        wgt_wer = weighted_score(Metric.WER, label_str, pred_str, weight_factor=0.5)
+        cer = cer_metric.compute(predictions=pred_str, references=label_str)
+        wer = wer_metric.compute(predictions=pred_str, references=label_str)
 
-        return {"cer": cer, "wer": wer}
+        return {"wgt_cer": wgt_cer, "wgt_wer": wgt_wer, "cer": cer, "wer": wer}
     return compute_metrics
 
 def weighted_score(metric: Metric, references: List, hypotheses: List, weight_factor: float = 0.5) -> float:
