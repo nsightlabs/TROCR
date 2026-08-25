@@ -173,7 +173,8 @@ def main():
         report_to=cfg.reporting.report_to,
         seed=cfg.train.seed,   
         optim=cfg.train.optimizer,  
-        dataloader_num_workers=cfg.train.dataloader_num_workers  
+        dataloader_num_workers=cfg.train.dataloader_num_workers,
+        label_smoothing_factor=cfg.train.label_smoothing_factor
     )
     
     trainer = Seq2SeqTrainer(
