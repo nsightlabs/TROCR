@@ -237,8 +237,8 @@ class DataAugment(object):
 
 
     def rand_aug(self, img):
-        print(self.augs)
-        augs = np.random.choice(self.augs, self.opt.augs_num, replace=False)
+        idxs = np.random.choice(len(self.augs), self.opt.augs_num, replace=False)
+        augs = [self.augs[idx] for idx in idxs]
         for aug in augs:
             index = np.random.randint(0, len(aug))
             op = aug[index]
