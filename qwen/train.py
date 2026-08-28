@@ -119,3 +119,6 @@ def main():
     )
     trainer_stats = trainer.train()
     print(trainer_stats)
+    
+if __name__ == "__main__":
+    main()
