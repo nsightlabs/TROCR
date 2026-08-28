@@ -191,7 +191,8 @@ def main():
         seed=cfg.train.seed,   
         optim=cfg.train.optimizer,  
         dataloader_num_workers=cfg.train.dataloader_num_workers,
-        label_smoothing_factor=cfg.train.label_smoothing_factor
+        label_smoothing_factor=cfg.train.label_smoothing_factor,
+        save_only_model=cfg.train.save_only_model
     )
     
     trainer = Seq2SeqTrainer(
