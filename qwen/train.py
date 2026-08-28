@@ -95,6 +95,7 @@ def main():
         eval_dataset = dataset['test'],
         args = SFTConfig(
             per_device_train_batch_size = cfg.per_device_train_batch_size,
+            per_device_eval_batch_size = cfg.per_device_eval_batch_size,
             gradient_accumulation_steps = cfg.gradient_accumulation_steps,
             warmup_steps = cfg.warmup_steps,
             max_steps = -1,
