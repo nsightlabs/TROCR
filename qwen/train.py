@@ -108,6 +108,7 @@ def main():
             eval_strategy = "epoch",
             save_strategy = "epoch",
             learning_rate = 2e-4,
+            logging_strategy = "epoch",
             optim = "adamw_8bit",
             weight_decay = 0.01,
             lr_scheduler_type = "linear",
