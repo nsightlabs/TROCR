@@ -50,23 +50,24 @@ def prepare_dataset(dataset_csv, IMAGE_DIR):
                 for hyp_idx, ref_idx in zip(range(hyp_start_idx, hyp_end_idx), range(ref_start_idx, ref_end_idx)):
                     edits.setdefault('substitute', {})[hyp_idx] = f"{hyp[hyp_idx]}->{ref[ref_idx]}"
             
-        OCR_TEXT = ''.join(hyp)        
-        PROMPT = ("You are provided the OCR text from TROCR model\n"
-                  "Identify the characters that should be substituted and which characters should replace them.\n"
-                  f"OCR TEXT:\n\t{OCR_TEXT}")
-        IMAGE = Image.open(os.path.join(IMAGE_DIR, f"{ID}.jpg"))
-        
-        SUBSTITUTES = '\n'.join([f"\t{k}: {v}" for k, v in edits.get('substitute').items()])
-        messages = [
-            {"role": "user", "content": [
-                {"type": "text", "text": PROMPT},
-                {"type": "image", "image": IMAGE}
-            ]},
-            {"role": "assistant", "content": [
-                {"type": "text", "text": SUBSTITUTES}
-            ]}
-        ]
-        dataset.append({"messages": messages})
+        if 'substitute' in edits:
+            OCR_TEXT = ''.join(hyp)        
+            PROMPT = ("You are provided the OCR text from TROCR model\n"
+                        "Identify the characters that should be substituted and which characters should replace them.\n"
+                        f"OCR TEXT:\n\t{OCR_TEXT}")
+            IMAGE = Image.open(os.path.join(IMAGE_DIR, f"{ID}.jpg"))
+                    
+            SUBSTITUTES = '\n'.join([f"\t{k}: {v}" for k, v in edits.get('substitute').items()])
+            messages = [
+                {"role": "user", "content": [
+                    {"type": "text", "text": PROMPT},
+                    {"type": "image", "image": IMAGE}
+                ]},
+                {"role": "assistant", "content": [
+                    {"type": "text", "text": SUBSTITUTES}
+                ]}
+            ]
+            dataset.append({"messages": messages})
     return dataset
 
 def parse_args():
