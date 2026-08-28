@@ -68,6 +68,6 @@ if __name__ == "__main__":
     results = list(submission_list)
     df = pd.DataFrame(results)
     os.makedirs(cfg.output_dir, exist_ok=True)
-    output_csv = os.path.join(cfg.output_dir, "".join(str(uuid4()).split('-')) + '.csv')
+    output_csv = os.path.join(cfg.output_dir, (cfg.output_filename if "output_filename" in cfg else "".join(str(uuid4()).split('-'))) + '.csv')
     df.to_csv(output_csv, index=False)    
     print(f"Saved {len(df)} predictions to {output_csv}")
