@@ -5,6 +5,7 @@ import torch
 import argparse
 import pandas as pd
 from PIL import Image
+from datasets import Dataset
 from omegaconf import OmegaConf
 from jiwer import process_characters
 from trl import SFTTrainer, SFTConfig
@@ -68,7 +69,7 @@ def prepare_dataset(dataset_csv, IMAGE_DIR):
                 ]}
             ]
             dataset.append({"messages": messages})
-    return dataset
+    return Dataset.from_list(dataset)
 
 def parse_args():
     p = argparse.ArgumentParser()
