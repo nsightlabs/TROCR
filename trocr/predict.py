@@ -33,7 +33,7 @@ def main(rank: int, world_size: int, cfg: OmegaConf.load, submission_list: list)
     sample_data = predict_data[rank::world_size]
 
     device = f"cuda:{rank}"
-    processor = TrOCRProcessor.from_pretrained("microsoft/trocr-base-handwritten")
+    processor = TrOCRProcessor.from_pretrained(cfg.load_from)
     model = VisionEncoderDecoderModel.from_pretrained(cfg.load_from).to(device)
     model = model.eval()
     
@@ -43,7 +43,7 @@ def main(rank: int, world_size: int, cfg: OmegaConf.load, submission_list: list)
         pixel_values = processor(images, return_tensors="pt").pixel_values.to(device)
         generated_ids = model.generate(pixel_values)
         generated_text = processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
-        submission_list.append({'ID': ID, 'Target': generated_text})    
+        submission_list.append({'ID': ID, 'Target': generated_text}) 
 
 
 if __name__ == "__main__":
