@@ -87,6 +87,9 @@ def main():
         'test': prepare_dataset(cfg.test_csv, cfg.IMAGE_DIR)
     }
     
+    print('train', dataset['train'])
+    print('test', dataset['test'])
+    
     model, tokenizer = load_model(cfg.model_name)
     FastVisionModel.for_training(model) # Enable for training!
     trainer = SFTTrainer(
