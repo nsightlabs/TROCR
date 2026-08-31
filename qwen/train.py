@@ -125,6 +125,8 @@ def main():
     )
     trainer_stats = trainer.train()
     print(trainer_stats)
+    model.save_pretrained(cfg.model_save_path)  # Local saving
+    tokenizer.save_pretrained(cfg.model_save_path)
     
 if __name__ == "__main__":
     main()

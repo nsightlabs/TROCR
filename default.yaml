@@ -58,6 +58,7 @@ train:
   optimizer: adamw_torch_fused
   dataloader_num_workers: 0
   label_smoothing_factor: 0
+  save_only_model: false
   preprocess:
     input_size: 384
     type: null
